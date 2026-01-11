@@ -11,6 +11,7 @@ def home():
 def get_my_profile():
     # TEMPORARY: hard-coded user for testing
     # This will be replaced by authentication
+    
     user_id = 1
 
     profile = get_user_by_id(user_id)
