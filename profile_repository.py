@@ -1,6 +1,6 @@
 from db import get_connection
 
-
+# Retrieve the user profile by ID
 def get_user_by_id(user_id: int):
     conn = get_connection()
     cursor = conn.cursor()
@@ -30,6 +30,7 @@ def get_user_by_id(user_id: int):
     }
 
 
+# Retrieve the user profile by username
 def get_user_id_by_username(username: str):
     conn = get_connection()
     cursor = conn.cursor()
@@ -44,6 +45,7 @@ def get_user_id_by_username(username: str):
 
     return row.UserID if row else None
 
+# Update the user profile using stored procedure
 def update_user_profile(user_id: int, data: dict):
     conn = get_connection()
     cursor = conn.cursor()
@@ -65,6 +67,7 @@ def update_user_profile(user_id: int, data: dict):
     conn.commit()
     conn.close()
 
+# Delete the user profile using sotred procedure
 def delete_user(user_id: int):
     conn = get_connection()
     cursor = conn.cursor()

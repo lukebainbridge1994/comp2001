@@ -4,19 +4,13 @@ from flask import request, jsonify
 
 AUTH_API_URL = "https://web.socem.plymouth.ac.uk/COMP2001/auth/api/users"
 
-# Hard-coded role mapping (allowed by coursework)
-USER_ROLES = {
-    "Grace Hopper": "admin",
-    "Tim Berners-Lee": "user",
-    "Ada Lovelace": "user"
-}
+ADMIN_USERS = [
+    "Tim Berners-Lee"
+]
 
-
+# Verify credentials using the API
 def verify_credentials(username: str, password: str) -> bool:
-    """
-    Sends credentials to the Authenticator API.
-    Returns True if verified, False otherwise.
-    """
+     
     payload = {
         "username": username,
         "password": password
@@ -27,26 +21,21 @@ def verify_credentials(username: str, password: str) -> bool:
         response.raise_for_status()
         result = response.json()
 
-        # Expected response: ["Verified", "False"]
+        # Expected response: ["Verified", "True"/"False"]
         return isinstance(result, list) and result[0] == "Verified"
 
     except Exception:
         return False
 
-
+# User role
 def get_user_role(username: str) -> str:
-    """
-    Returns the role for a given user.
-    Defaults to 'user' if not explicitly defined.
-    """
-    return USER_ROLES.get(username, "user")
+    
+    return "admin" if username in ADMIN_USERS else "user"
 
 
+# Enforce authentication and optional role checks
 def require_auth(required_role=None):
-    """
-    Decorator to protect endpoints with authentication
-    and optional role-based access control.
-    """
+    
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -55,8 +44,10 @@ def require_auth(required_role=None):
             if not auth_data:
                 return jsonify({"error": "Missing authentication data"}), 401
 
-            username = auth_data.get("username")
-            password = auth_data.get("password")
+            # 'auth_username' instead of 'username' in the case
+            # that the username is to be changed.
+            username = auth_data.get("auth_username")
+            password = auth_data.get("auth_password")
 
             if not username or not password:
                 return jsonify({"error": "Username and password required"}), 401
@@ -69,7 +60,6 @@ def require_auth(required_role=None):
             if required_role and role != required_role:
                 return jsonify({"error": "Forbidden"}), 403
 
-            # Attach user info to request context
             request.user = {
                 "username": username,
                 "role": role
