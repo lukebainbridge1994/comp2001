@@ -6,8 +6,10 @@ from profile_repository import (
     delete_user
 )
 from auth import require_auth
+from flasgger import Swagger
 
 app = Flask(__name__)
+swagger = Swagger(app, template_file="swagger.yaml")
 
 # Endpoint health check
 @app.route("/")
@@ -147,4 +149,4 @@ def admin_delete_profile(user_id):
 print(app.url_map)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

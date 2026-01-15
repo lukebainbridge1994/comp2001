@@ -1,0 +1,219 @@
+swagger: "2.0"
+
+info:
+  title: ProfileService API
+  description: |
+    Profile microservice for COMP2001.
+    Handles user profile creation, retrieval, update and deletion.
+  version: "1.0.0"
+
+host: 127.0.0.1:5000
+basePath: /
+schemes:
+  - http
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+  - name: Profile (User)
+    description: Endpoints for users managing their own profile
+  - name: Profile (Admin)
+    description: Admin-only endpoints for managing any user profile
+
+definitions:
+  AuthRequest:
+    type: object
+    required:
+      - auth_username
+      - auth_password
+    properties:
+      auth_username:
+        type: string
+        example: Firstame Lastname
+      auth_password:
+        type: string
+        example: Password1!
+
+  ProfileCreate:
+    type: object
+    required:
+      - auth_username
+      - auth_password
+      - location
+    properties:
+      auth_username:
+        type: string
+      auth_password:
+        type: string
+      location:
+        type: string
+
+  ProfileUpdate:
+    type: object
+    properties:
+      location:
+        type: string
+
+  AdminProfileUpdate:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      location:
+        type: string
+
+  ProfileResponse:
+    type: object
+    properties:
+      user_id:
+        type: integer
+      username:
+        type: string
+      location:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+
+paths:
+
+  /api/profile/me:
+    post:
+      tags:
+        - Profile (User)
+      summary: Get own profile
+      description: Returns the user's profile
+      parameters:
+        - in: body
+          name: auth
+          required: true
+          schema:
+            $ref: "#/definitions/AuthRequest"
+      responses:
+        200:
+          description: Profile returned successfully
+          schema:
+            $ref: "#/definitions/ProfileResponse"
+        401:
+          description: Authentication failed
+        404:
+          description: Profile not found
+
+    put:
+      tags:
+        - Profile (User)
+      summary: Update own profile
+      description: Update the user's profile
+      parameters:
+        - in: body
+          name: profile
+          required: true
+          schema:
+            $ref: "#/definitions/ProfileUpdate"
+      responses:
+        200:
+          description: Profile updated successfully
+        401:
+          description: Authentication failed
+        404:
+          description: Profile not found
+
+    delete:
+      tags:
+        - Profile (User)
+      summary: Delete own profile
+      description: Deletes the user's profile
+      parameters:
+        - in: body
+          name: auth
+          required: true
+          schema:
+            $ref: "#/definitions/AuthRequest"
+      responses:
+        200:
+          description: Profile deleted successfully
+        401:
+          description: Authentication failed
+        404:
+          description: Profile not found
+
+  /api/profile/admin/{user_id}:
+    post:
+      tags:
+        - Profile (Admin)
+      summary: Create profile for a user
+      description: Admin-only endpoint to create a profile for any user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: profile
+          required: true
+          schema:
+            $ref: "#/definitions/ProfileCreate"
+      responses:
+        201:
+          description: Profile created successfully
+        401:
+          description: Authentication failed
+        403:
+          description: Admin privileges required
+        409:
+          description: Profile already exists
+
+    put:
+      tags:
+        - Profile (Admin)
+      summary: Update any user profile
+      description: Admin-only endpoint to update any user's profile
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: profile
+          required: true
+          schema:
+            $ref: "#/definitions/AdminProfileUpdate"
+      responses:
+        200:
+          description: Profile updated successfully
+        401:
+          description: Authentication failed
+        403:
+          description: Admin privileges required
+        404:
+          description: Profile not found
+
+    delete:
+      tags:
+        - Profile (Admin)
+      summary: Delete any user profile
+      description: Admin-only endpoint to delete any user's profile
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          type: integer
+        - in: body
+          name: auth
+          required: true
+          schema:
+            $ref: "#/definitions/AuthRequest"
+      responses:
+        200:
+          description: Profile deleted successfully
+        401:
+          description: Authentication failed
+        403:
+          description: Admin privileges required
+        404:
+          description: Profile not found
