@@ -26,3 +26,8 @@ The service is available as a Docker image on Docker Hub:
 docker pull lukeb1994/profile-service:latest
 
 docker run --env-file .env -p 5000:5000 lukeb1994/profile-service:latest
+
+## Service URLs
+
+Swagger UI: http://127.0.0.1:5000/apidocs/
+Health check: http://127.0.0.1:5000/
