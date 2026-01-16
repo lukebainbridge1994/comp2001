@@ -24,4 +24,5 @@ The service is responsible for managing user profile data within the Trail / All
 The service is available as a Docker image on Docker Hub:
 
 docker pull lukeb1994/profile-service:latest
+
 docker run --env-file .env -p 5000:5000 lukeb1994/profile-service:latest
