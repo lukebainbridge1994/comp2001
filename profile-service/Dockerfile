@@ -8,9 +8,10 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     unixodbc \
     unixodbc-dev \
+    odbcinst \
     && rm -rf /var/lib/apt/lists/*
 
-# Add Microsoft package signing key (modern method)
+# Add Microsoft package signing key
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
     | gpg --dearmor \
     | tee /usr/share/keyrings/microsoft.gpg > /dev/null
@@ -23,6 +24,12 @@ https://packages.microsoft.com/debian/12/prod bookworm main" \
 # Install SQL Server ODBC driver
 RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && rm -rf /var/lib/apt/lists/*
+
+# 🔑 REGISTER DRIVER THE CORRECT WAY
+RUN odbcinst -i -d -f /opt/microsoft/msodbcsql18/etc/odbcinst.ini
+
+# Verify driver is registered (safe to keep)
+RUN odbcinst -q -d
 
 # Copy requirements
 COPY requirements.txt .
